@@ -8,8 +8,8 @@ are committed back into this repository and aggregated automatically.
 - **Reference (never ranked):** the original source motion
 - **Criteria:** overall quality, self-penetration, semantic preservation
 - **Ties are allowed** — participants may give two results the same rank
-- **Blinded** — methods are relabelled A–F in a fresh random order on every
-  clip, for every participant
+- **Blinded** — methods are shown only as A–F, never by name. The mapping is
+  fixed (see below) unless `randomizeMethodOrder` is enabled.
 
 Results land in [`results/aggregate.md`](results/aggregate.md).
 
@@ -146,11 +146,25 @@ inspect the per-response files before drawing conclusions.
 
 ## Notes on validity
 
-- **Blinding**: method identity never reaches the browser as a label. The
-  letter↔method mapping is regenerated per clip and stored with each response,
-  so it is fully reconstructible at analysis time.
-- **Order effects**: both the method→letter assignment and the clip order are
-  shuffled per participant.
+- **Blinding**: method identity never reaches the participant as a label, only
+  as a letter. The letter↔method mapping is stored with every response, so it
+  is fully reconstructible at analysis time, and `ranks` is always keyed by the
+  real method name.
+- **Order effects**: the method→letter assignment is currently **fixed**, so
+  every participant sees the methods in the same left-to-right order:
+
+  | A | B | C | D | E | F |
+  |---|---|---|---|---|---|
+  | Ground truth | Naive copy | HumanIK | SAN | R2ET | ReFM-HumanIK |
+
+  This is easier to reason about, but it means any position bias lands on the
+  same method every time instead of averaging out — a reviewer may ask about
+  it. Set `randomizeMethodOrder: true` in `assets/config.js` to reshuffle per
+  clip per participant, which removes the concern entirely; the analysis
+  scripts need no changes either way. To change the fixed order, reorder the
+  `RANKED` dict in `scripts/build_manifest.py` and rebuild the manifest.
+- Clip order is shuffled per participant, which spreads fatigue effects evenly
+  across clips. Controlled by `randomizeClipOrder`.
 - **No partial data**: nothing is transmitted until the participant submits, and
   every criterion must be fully ranked before advancing.
 - Responses contain no names or emails. They do record a user-agent string and

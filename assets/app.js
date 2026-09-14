@@ -1,11 +1,13 @@
 /* Motion retargeting user study — front end.
  *
  * Design notes that matter for the validity of the results:
- *  - Method identity is never exposed to the participant. Each clip gets a
- *    fresh random permutation of methods onto the letters A, B, C, ..., so
- *    neither position nor label leaks which method produced a video.
- *  - The permutation is stored with the response, so the mapping is
- *    recoverable at analysis time.
+ *  - Method identity is never exposed to the participant: videos are labelled
+ *    only A, B, C, ...
+ *  - Whether that labelling is fixed for everyone or reshuffled per clip is
+ *    set by `randomizeMethodOrder` in config.js.
+ *  - Either way the letter-to-method mapping is stored with every response, so
+ *    the mapping is recoverable at analysis time and `ranks` is always keyed by
+ *    the real method name.
  *  - Ties are permitted by design: ranks are chosen independently per method
  *    rather than by ordering a list.
  *  - Nothing is transmitted until the participant submits.
@@ -65,13 +67,18 @@ function show(screenId) {
 /* --------------------------------------------------------------- session */
 
 function buildSession(manifest) {
+  // Manifest key order is the fixed presentation order when shuffling is off.
   const methods = Object.keys(manifest.methods);
   const wanted = Number(CFG.clipsPerParticipant) || 0;
-  let pool = shuffled(manifest.clips);
+  let pool = CFG.randomizeClipOrder === false
+    ? manifest.clips.slice()
+    : shuffled(manifest.clips);
   if (wanted > 0 && wanted < pool.length) pool = pool.slice(0, wanted);
 
   return pool.map((clip) => {
-    const order = shuffled(methods);
+    const order = CFG.randomizeMethodOrder === true
+      ? shuffled(methods)
+      : methods;
     return {
       id: clip.id,
       file: clip.file,
