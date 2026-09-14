@@ -106,27 +106,37 @@ dl.criteria dd { margin: .15em 0 0; color: var(--muted); }
   display: flex; flex-direction: column; gap: 10px;
 }
 
-/* 600x600 sources, so tiles are square. */
+/* Sources are 600x600. Columns are fractional so the row fills the width, but
+   the strip is capped at 7 x --tile and each cell is forced square, so the
+   frames are never cropped. --tile is bounded by height as well as width so a
+   short window shrinks the videos instead of pushing controls off-screen. */
 .strip {
-  display: grid; grid-template-columns: repeat(7, 1fr);
+  display: grid; grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 8px;
-  --tile: clamp(84px, min(12.2vw, 22vh), 180px);
-  grid-auto-rows: var(--tile);
-  justify-content: center;
+  --tile: clamp(84px, min(13vw, 26vh), 200px);
+  max-width: calc(7 * var(--tile) + 6 * 8px);
+  margin: 0 auto; width: 100%;
 }
 .strip-note { margin: -2px 0 2px; }
 
 .cell {
-  position: relative; background: #000;
+  position: relative; background: #000; aspect-ratio: 1;
   border: 1px solid var(--line); border-radius: 8px;
   overflow: hidden; cursor: zoom-in; transition: border-color .12s, transform .12s;
 }
 .cell:hover, .cell.hot { border-color: var(--accent); }
 .cell.hot { transform: translateY(-2px); }
 .cell.is-ref { border-color: var(--muted); }
-.cell video {
-  width: 100%; height: 100%; display: block;
-  object-fit: cover; background: #000;
+/* The 600x600 renders carry a wide white margin. Measured over every frame of
+   all 105 clips, content never leaves a 494px square at (80,56); these values
+   crop to that box plus a 16px pad, so characters appear ~1.21x larger without
+   any risk of clipping a limb. Recompute with scripts/measure_crop.sh if the
+   stimuli are re-rendered. */
+.cell video, .zoom video {
+  position: absolute;
+  width: 121.46%; height: 121.46%;
+  left: -16.19%; top: -11.34%;
+  display: block; background: #fff;
 }
 .tag {
   position: absolute; top: 5px; left: 5px; z-index: 2;
@@ -214,11 +224,11 @@ dl.criteria dd { margin: .15em 0 0; color: var(--muted); }
   background: rgba(4,7,12,.9); padding: 24px;
   cursor: zoom-out;
 }
-.zoom-inner { position: relative; }
-.zoom video {
+/* Same framing as the tiles, just larger. */
+.zoom-inner {
+  position: relative; overflow: hidden;
   width: min(74vh, 74vw); height: min(74vh, 74vw);
-  display: block; border-radius: 10px; background: #000;
-  border: 1px solid var(--line);
+  border-radius: 10px; border: 1px solid var(--line); background: #fff;
 }
 .zoom-tag { font-size: 1rem; top: 10px; left: 10px; }
 .zoom-close { position: fixed; top: 20px; right: 22px; cursor: pointer; }
@@ -226,11 +236,19 @@ dl.criteria dd { margin: .15em 0 0; color: var(--muted); }
 /* Narrower screens: wrap the strip and stack the criteria rather than
    letting anything become unreadably small. */
 @media (max-width: 1080px) {
-  .strip { grid-template-columns: repeat(4, 1fr); --tile: min(21vw, 150px); }
+  .strip {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    --tile: min(21vw, 150px);
+    max-width: calc(4 * var(--tile) + 3 * 8px);
+  }
   .matrix { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 680px) {
-  .strip { grid-template-columns: repeat(3, 1fr); --tile: min(29vw, 130px); }
+  .strip {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    --tile: min(29vw, 130px);
+    max-width: calc(3 * var(--tile) + 2 * 8px);
+  }
   .matrix { grid-template-columns: 1fr; }
   .bar-inner { gap: 8px; padding: 8px 12px; }
   .stage { padding: 10px 12px 16px; }
