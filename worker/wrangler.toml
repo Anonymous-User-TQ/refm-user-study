@@ -8,6 +8,6 @@ compatibility_date = "2024-11-01"
 # GITHUB_TOKEN is deliberately absent: it is a secret and must be set with
 #   wrangler secret put GITHUB_TOKEN
 # so it is never committed to the repository.
-GITHUB_REPO = "YOUR-GITHUB-USERNAME/refm-user-study"
+GITHUB_REPO = "Anonymous-User-TQ/refm-user-study"
 GITHUB_BRANCH = "main"
-ALLOWED_ORIGIN = "https://YOUR-GITHUB-USERNAME.github.io"
+ALLOWED_ORIGIN = "https://anonymous-user-tq.github.io"
