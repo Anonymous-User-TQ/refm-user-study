@@ -21,8 +21,8 @@
 
     <h2>What you are looking at</h2>
     <p>
-      Each page shows one <strong>reference video</strong> at the top &mdash; the
-      original motion performed by the source character. Below it are
+      Each page shows one <strong>reference video</strong> on the left &mdash; the
+      original motion performed by the source character. Beside it are
       <strong id="intro-n-methods">several</strong> versions of that same motion
       applied to a different target character, each produced by a different
       method. They are labelled <strong>A</strong>, <strong>B</strong>,
@@ -46,6 +46,13 @@
     </dl>
 
     <h2>How to rank</h2>
+    <p>
+      Under the videos are three grids, one per criterion. Each row is a video
+      (A, B, C&hellip;) and each column is a rank &mdash; click a cell to give
+      that video that rank. Everything fits on one screen, so you should not
+      need to scroll while judging. Click any video to enlarge it if you want a
+      closer look.
+    </p>
     <p>
       Give each version a rank from 1 (best) downward.
       <strong>Ties are allowed and expected</strong> &mdash; if two versions look
@@ -71,38 +78,42 @@
 <!-- ----------------------------------------------------------------- task -->
 <section id="screen-task" class="screen hidden">
   <header class="bar">
-    <div class="wrap bar-inner">
+    <div class="bar-inner">
       <span class="progress-text">Clip <b id="clip-index">1</b> of <b id="clip-total">1</b></span>
       <div class="progress-track"><div id="progress-fill" class="progress-fill"></div></div>
+      <button id="btn-replay" class="ghost small" type="button">&#9654; Replay</button>
+      <button id="btn-pause" class="ghost small" type="button">&#10073;&#10073; Pause</button>
       <button id="btn-help" class="ghost small" type="button">Criteria</button>
     </div>
   </header>
 
-  <div class="wrap">
-    <div class="reference">
-      <h2>Reference &mdash; source motion</h2>
-      <video id="video-reference" muted loop playsinline preload="auto"></video>
-      <p class="muted small">This is the motion being transferred. It is shown for
-         comparison only and is not ranked.</p>
-    </div>
+  <main class="stage">
+    <!-- Reference tile is prepended to this strip, so all seven videos sit in
+         one row and no scrolling is needed to compare them. -->
+    <div id="video-strip" class="strip"></div>
+    <p class="strip-note muted small">
+      Leftmost is the <strong>reference</strong> (source motion, not ranked).
+      Click any video to enlarge it.
+    </p>
 
-    <div class="playbar">
-      <button id="btn-replay" class="ghost" type="button">&#9654; Replay all</button>
-      <button id="btn-pause" class="ghost" type="button">&#10073;&#10073; Pause all</button>
-      <span class="muted small">All videos are synchronised and loop automatically.</span>
-    </div>
-
-    <div id="video-grid" class="grid"></div>
-
-    <div id="ranking-blocks"></div>
+    <div id="ranking-matrix" class="matrix"></div>
 
     <div class="nav">
       <button id="btn-back" class="ghost" type="button">Back</button>
       <span id="validation" class="validation"></span>
       <button id="btn-next" class="primary" type="button">Next clip</button>
     </div>
-  </div>
+  </main>
 </section>
+
+<!-- Enlarged view, so small tiles never prevent close inspection -->
+<div id="zoom-modal" class="zoom hidden">
+  <div class="zoom-inner">
+    <span id="zoom-tag" class="tag zoom-tag"></span>
+    <video id="zoom-video" muted loop playsinline></video>
+  </div>
+  <button id="btn-zoom-close" class="ghost zoom-close" type="button">Close &times;</button>
+</div>
 
 <!-- --------------------------------------------------------------- submit -->
 <section id="screen-submit" class="screen hidden">

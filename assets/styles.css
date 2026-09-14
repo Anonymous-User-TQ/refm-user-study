@@ -81,8 +81,8 @@ dl.criteria dd { margin: .15em 0 0; color: var(--muted); }
   border-bottom: 1px solid var(--line);
 }
 .bar-inner {
-  display: flex; align-items: center; gap: 16px;
-  padding: 12px 22px; max-width: 1240px;
+  display: flex; align-items: center; gap: 12px;
+  padding: 9px 20px; margin: 0 auto; max-width: 1500px;
 }
 .progress-text { white-space: nowrap; font-size: .92rem; color: var(--muted); }
 .progress-text b { color: var(--ink); }
@@ -95,81 +95,98 @@ dl.criteria dd { margin: .15em 0 0; color: var(--muted); }
   border-radius: 99px; transition: width .3s;
 }
 
-/* -------------------------------------------------------------- videos */
+/* --------------------------------------------------------------- stage
+   The task screen is laid out to fit one viewport: a single row of seven
+   square videos, then the three criteria side by side. Tile size is driven by
+   both viewport width and height so neither dimension forces a scrollbar. */
 
-.reference {
-  margin: 8px 0 18px; padding: 16px;
-  background: var(--panel); border: 1px solid var(--line);
-  border-radius: var(--radius);
-}
-.reference h2 { margin: 0 0 .6em; font-size: .95rem; letter-spacing: .04em;
-                text-transform: uppercase; color: var(--muted); }
-.reference video {
-  width: 100%; max-width: 420px; display: block;
-  border-radius: 8px; background: #000;
+.stage {
+  max-width: 1500px; margin: 0 auto;
+  padding: 14px 20px 18px;
+  display: flex; flex-direction: column; gap: 10px;
 }
 
-.playbar {
-  display: flex; align-items: center; gap: 12px;
-  margin: 0 0 14px; flex-wrap: wrap;
+/* 600x600 sources, so tiles are square. */
+.strip {
+  display: grid; grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  --tile: clamp(84px, min(12.2vw, 22vh), 180px);
+  grid-auto-rows: var(--tile);
+  justify-content: center;
 }
+.strip-note { margin: -2px 0 2px; }
 
-.grid {
-  display: grid; gap: 14px; margin-bottom: 30px;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-}
 .cell {
-  position: relative; background: var(--panel);
-  border: 1px solid var(--line); border-radius: var(--radius);
-  overflow: hidden;
+  position: relative; background: #000;
+  border: 1px solid var(--line); border-radius: 8px;
+  overflow: hidden; cursor: zoom-in; transition: border-color .12s, transform .12s;
 }
-.cell video { width: 100%; display: block; background: #000; }
+.cell:hover, .cell.hot { border-color: var(--accent); }
+.cell.hot { transform: translateY(-2px); }
+.cell.is-ref { border-color: var(--muted); }
+.cell video {
+  width: 100%; height: 100%; display: block;
+  object-fit: cover; background: #000;
+}
 .tag {
-  position: absolute; top: 8px; left: 8px; z-index: 2;
-  background: rgba(8,17,31,.85); color: #fff;
-  border: 1px solid var(--line); border-radius: 6px;
-  font-weight: 700; font-size: .95rem; padding: .12em .6em;
+  position: absolute; top: 5px; left: 5px; z-index: 2;
+  background: rgba(8,17,31,.82); color: #fff;
+  border: 1px solid var(--line); border-radius: 5px;
+  font-weight: 700; font-size: .78rem; padding: .05em .45em;
+  letter-spacing: .02em; pointer-events: none;
 }
+.cell.is-ref .tag { background: var(--muted); color: var(--accent-ink); }
 
 /* ------------------------------------------------------------ ranking */
 
-.rank-block {
-  margin: 0 0 18px; padding: 16px 18px 18px;
-  background: var(--panel); border: 1px solid var(--line);
-  border-radius: var(--radius);
-}
-.rank-block legend {
-  padding: 0 .5em; font-weight: 650; color: #fff;
-}
-.rank-rows { display: flex; flex-direction: column; gap: 8px; margin-top: .6em; }
-.rank-row { display: flex; align-items: center; gap: 14px; }
-.rank-label {
-  width: 2.2em; font-weight: 700; text-align: center;
-  background: var(--panel-2); border: 1px solid var(--line);
-  border-radius: 6px; padding: .18em 0;
+.matrix {
+  display: grid; gap: 10px;
+  grid-template-columns: repeat(3, 1fr);
 }
 
-.rank-options { display: flex; gap: 6px; flex-wrap: wrap; }
-.rank-options input { position: absolute; opacity: 0; pointer-events: none; }
-.rank-options label {
-  display: grid; place-items: center;
-  min-width: 2.4em; padding: .35em .55em;
-  background: var(--panel-2); border: 1px solid var(--line);
-  border-radius: 7px; cursor: pointer; user-select: none;
-  font-variant-numeric: tabular-nums; transition: .12s;
+.crit {
+  margin: 0; padding: 8px 12px 11px;
+  background: var(--panel); border: 1px solid var(--line);
+  border-radius: var(--radius); min-width: 0;
 }
-.rank-options label:hover { border-color: var(--accent); }
-.rank-options input:checked + label {
+.crit legend {
+  padding: 0 .4em; font-weight: 650; color: #fff; font-size: .95rem;
+}
+.crit-head { font-size: .76rem; margin: 0 0 6px; }
+
+/* Column 1 is the A-F label, then one column per rank. */
+.crit-grid {
+  display: grid;
+  grid-template-columns: 1.7em repeat(var(--n), minmax(0, 1fr));
+  gap: 4px; align-items: center;
+}
+.cg-row {
+  font-weight: 700; font-size: .84rem; text-align: center;
+  color: var(--muted); cursor: default;
+}
+.crit-grid input { position: absolute; opacity: 0; pointer-events: none; }
+.cg-cell {
+  display: grid; place-items: center;
+  height: 1.85em; border-radius: 6px;
+  background: var(--panel-2); border: 1px solid var(--line);
+  cursor: pointer; user-select: none;
+  font-size: .82rem; color: var(--muted);
+  font-variant-numeric: tabular-nums; transition: .1s;
+}
+.cg-cell:hover { border-color: var(--accent); color: var(--ink); }
+.crit-grid input:checked + .cg-cell {
   background: var(--accent); color: var(--accent-ink);
   border-color: var(--accent); font-weight: 700;
 }
-.rank-options input:focus-visible + label { outline: 2px solid var(--accent); outline-offset: 2px; }
+.crit-grid input:focus-visible + .cg-cell {
+  outline: 2px solid var(--accent); outline-offset: 1px;
+}
 
 /* ----------------------------------------------------------------- nav */
 
 .nav {
   display: flex; align-items: center; gap: 16px;
-  padding-top: 8px; flex-wrap: wrap;
+  flex-wrap: wrap;
 }
 .nav .primary { margin-left: auto; }
 .validation { font-size: .9rem; color: var(--muted); }
@@ -189,7 +206,32 @@ dl.criteria dd { margin: .15em 0 0; color: var(--muted); }
   border-radius: var(--radius); padding: 24px 26px; max-width: 560px;
 }
 
-@media (max-width: 620px) {
-  .rank-row { align-items: flex-start; flex-direction: column; gap: 6px; }
-  .bar-inner { gap: 10px; }
+/* ---------------------------------------------------------------- zoom */
+
+.zoom {
+  position: fixed; inset: 0; z-index: 60;
+  display: grid; place-items: center;
+  background: rgba(4,7,12,.9); padding: 24px;
+  cursor: zoom-out;
+}
+.zoom-inner { position: relative; }
+.zoom video {
+  width: min(74vh, 74vw); height: min(74vh, 74vw);
+  display: block; border-radius: 10px; background: #000;
+  border: 1px solid var(--line);
+}
+.zoom-tag { font-size: 1rem; top: 10px; left: 10px; }
+.zoom-close { position: fixed; top: 20px; right: 22px; cursor: pointer; }
+
+/* Narrower screens: wrap the strip and stack the criteria rather than
+   letting anything become unreadably small. */
+@media (max-width: 1080px) {
+  .strip { grid-template-columns: repeat(4, 1fr); --tile: min(21vw, 150px); }
+  .matrix { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 680px) {
+  .strip { grid-template-columns: repeat(3, 1fr); --tile: min(29vw, 130px); }
+  .matrix { grid-template-columns: 1fr; }
+  .bar-inner { gap: 8px; padding: 8px 12px; }
+  .stage { padding: 10px 12px 16px; }
 }

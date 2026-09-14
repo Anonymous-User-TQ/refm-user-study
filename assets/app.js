@@ -137,70 +137,75 @@ function renderClip() {
   $("btn-next").textContent =
     state.index === total - 1 ? "Finish" : "Next clip";
 
-  const ref = $("video-reference");
-  ref.src = videoPath(state.manifest.reference, clip.file);
-  ref.load();
-
-  // Video grid, labelled by letter only.
-  const grid = $("video-grid");
-  grid.textContent = "";
+  // One row: reference first, then the lettered results.
+  const strip = $("video-strip");
+  strip.textContent = "";
+  strip.append(makeTile("REF", state.manifest.reference, clip.file, true));
   clip.letters.forEach(({ letter, method }) => {
-    const cell = document.createElement("div");
-    cell.className = "cell";
-
-    const tag = document.createElement("div");
-    tag.className = "tag";
-    tag.textContent = letter;
-
-    const v = document.createElement("video");
-    v.src = videoPath(method, clip.file);
-    v.muted = true;
-    v.loop = true;
-    v.playsInline = true;
-    v.preload = "auto";
-    v.setAttribute("aria-label", `Result ${letter}`);
-
-    cell.append(tag, v);
-    grid.append(cell);
+    strip.append(makeTile(letter, method, clip.file, false));
   });
 
-  renderRankingBlocks(clip);
+  renderRankingMatrix(clip);
   playAll();
 }
 
-function renderRankingBlocks(clip) {
-  const host = $("ranking-blocks");
+function makeTile(label, method, file, isReference) {
+  const cell = document.createElement("div");
+  cell.className = isReference ? "cell is-ref" : "cell";
+  cell.dataset.letter = label;
+
+  const tag = document.createElement("div");
+  tag.className = "tag";
+  tag.textContent = label;
+
+  const v = document.createElement("video");
+  v.src = videoPath(method, file);
+  v.muted = true;
+  v.loop = true;
+  v.playsInline = true;
+  v.preload = "auto";
+  v.setAttribute("aria-label", isReference ? "Reference motion" : `Result ${label}`);
+
+  cell.append(tag, v);
+  cell.addEventListener("click", () => openZoom(label, v.src));
+  return cell;
+}
+
+/* The three criteria sit side by side as compact A-F x rank grids, so the
+ * videos and every control they need fit in a single viewport. */
+function renderRankingMatrix(clip) {
+  const host = $("ranking-matrix");
   host.textContent = "";
   const saved = state.responses[state.index] || {};
   const n = clip.letters.length;
 
   CRITERIA.forEach((crit) => {
     const block = document.createElement("fieldset");
-    block.className = "rank-block";
+    block.className = "crit";
 
     const legend = document.createElement("legend");
     legend.textContent = crit.label;
+    legend.title = crit.hint;
     block.append(legend);
 
-    const hint = document.createElement("p");
-    hint.className = "muted small";
-    hint.textContent = `${crit.hint} Rank 1 is best. Ties are allowed.`;
-    block.append(hint);
+    const head = document.createElement("div");
+    head.className = "crit-head muted";
+    head.textContent = "1 = best · ties allowed";
+    block.append(head);
 
-    const rows = document.createElement("div");
-    rows.className = "rank-rows";
+    const gridEl = document.createElement("div");
+    gridEl.className = "crit-grid";
+    gridEl.style.setProperty("--n", String(n));
 
     clip.letters.forEach(({ letter, method }) => {
-      const row = document.createElement("div");
-      row.className = "rank-row";
+      const rowLabel = document.createElement("span");
+      rowLabel.className = "cg-row";
+      rowLabel.textContent = letter;
+      // Hovering a row highlights the matching video, linking grid to strip.
+      rowLabel.addEventListener("mouseenter", () => highlightTile(letter, true));
+      rowLabel.addEventListener("mouseleave", () => highlightTile(letter, false));
+      gridEl.append(rowLabel);
 
-      const name = document.createElement("span");
-      name.className = "rank-label";
-      name.textContent = letter;
-      row.append(name);
-
-      const opts = document.createElement("div");
-      opts.className = "rank-options";
       for (let r = 1; r <= n; r++) {
         const id = `${crit.key}-${letter}-${r}`;
         const input = document.createElement("input");
@@ -215,21 +220,44 @@ function renderRankingBlocks(clip) {
         });
 
         const lab = document.createElement("label");
+        lab.className = "cg-cell";
         lab.setAttribute("for", id);
         lab.textContent = String(r);
-        lab.title = r === 1 ? "Best" : (r === n ? "Worst" : `Rank ${r}`);
+        lab.title = `${letter}: rank ${r}${r === 1 ? " (best)" : ""}`;
 
-        opts.append(input, lab);
+        gridEl.append(input, lab);
       }
-      row.append(opts);
-      rows.append(row);
     });
 
-    block.append(rows);
+    block.append(gridEl);
     host.append(block);
   });
 
   updateValidation();
+}
+
+function highlightTile(letter, on) {
+  const tile = document.querySelector(`#video-strip .cell[data-letter="${letter}"]`);
+  if (tile !== null) tile.classList.toggle("hot", on);
+}
+
+/* -------------------------------------------------------------- zoom view */
+
+function openZoom(label, src) {
+  const zv = $("zoom-video");
+  $("zoom-tag").textContent = label;
+  zv.src = src;
+  $("zoom-modal").classList.remove("hidden");
+  zv.currentTime = 0;
+  const p = zv.play();
+  if (p !== undefined && typeof p.catch === "function") p.catch(() => {});
+}
+
+function closeZoom() {
+  const zv = $("zoom-video");
+  zv.pause();
+  zv.removeAttribute("src");
+  $("zoom-modal").classList.add("hidden");
 }
 
 function captureCurrent() {
@@ -273,7 +301,7 @@ function updateValidation() {
 /* ------------------------------------------------------ video transport */
 
 function allVideos() {
-  return [$("video-reference"), ...document.querySelectorAll("#video-grid video")];
+  return [...document.querySelectorAll("#video-strip video")];
 }
 
 function playAll() {
@@ -443,6 +471,15 @@ async function init() {
   $("btn-pause").addEventListener("click", pauseAll);
   $("btn-help").addEventListener("click", () => $("help-modal").classList.remove("hidden"));
   $("btn-help-close").addEventListener("click", () => $("help-modal").classList.add("hidden"));
+  $("btn-zoom-close").addEventListener("click", closeZoom);
+  $("zoom-modal").addEventListener("click", (e) => {
+    if (e.target === $("zoom-modal")) closeZoom();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape") return;
+    if (!$("zoom-modal").classList.contains("hidden")) closeZoom();
+    else $("help-modal").classList.add("hidden");
+  });
   $("btn-submit").addEventListener("click", submit);
   $("btn-download").addEventListener("click", () => downloadPayload(buildPayload()));
 }
