@@ -1,0 +1,13 @@
+name = "refm-user-study"
+main = "worker.js"
+compatibility_date = "2024-11-01"
+
+[vars]
+# Non-secret configuration. Edit these three, then `wrangler deploy`.
+#
+# GITHUB_TOKEN is deliberately absent: it is a secret and must be set with
+#   wrangler secret put GITHUB_TOKEN
+# so it is never committed to the repository.
+GITHUB_REPO = "YOUR-GITHUB-USERNAME/refm-user-study"
+GITHUB_BRANCH = "main"
+ALLOWED_ORIGIN = "https://YOUR-GITHUB-USERNAME.github.io"

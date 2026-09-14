@@ -1,0 +1,74 @@
+{
+  "reference": "original",
+  "methods": {
+    "gt": "Ground truth",
+    "copy": "Naive copy",
+    "humanik": "HumanIK",
+    "san": "SAN",
+    "r2et": "R2ET",
+    "refm_hik": "ReFM-HumanIK"
+  },
+  "videoRoot": "videos",
+  "clips": [
+    {
+      "id": "Body_Jab_Cross_from_SportyGranny_to_Mousey",
+      "file": "Body_Jab_Cross_from_SportyGranny_to_Mousey.mp4"
+    },
+    {
+      "id": "Brooklyn_Uprock_from_Swat_to_Aj",
+      "file": "Brooklyn_Uprock_from_Swat_to_Aj.mp4"
+    },
+    {
+      "id": "Dancing_Twerk_from_YBot_to_Aj",
+      "file": "Dancing_Twerk_from_YBot_to_Aj.mp4"
+    },
+    {
+      "id": "Dancing_from_SportyGranny_to_Aj",
+      "file": "Dancing_from_SportyGranny_to_Aj.mp4"
+    },
+    {
+      "id": "Dancing_from_TheBoss_to_Aj",
+      "file": "Dancing_from_TheBoss_to_Aj.mp4"
+    },
+    {
+      "id": "Goalkeeper_Catch_from_YBot_to_Aj",
+      "file": "Goalkeeper_Catch_from_YBot_to_Aj.mp4"
+    },
+    {
+      "id": "Golf_Putt_from_Ortiz_to_Kaya",
+      "file": "Golf_Putt_from_Ortiz_to_Kaya.mp4"
+    },
+    {
+      "id": "Head_Hit_from_SportyGranny_to_TheBoss",
+      "file": "Head_Hit_from_SportyGranny_to_TheBoss.mp4"
+    },
+    {
+      "id": "Head_Hit_from_TheBoss_to_Mousey",
+      "file": "Head_Hit_from_TheBoss_to_Mousey.mp4"
+    },
+    {
+      "id": "Hip_Hop_Dancing-4_from_Swat_to_SportyGranny",
+      "file": "Hip_Hop_Dancing-4_from_Swat_to_SportyGranny.mp4"
+    },
+    {
+      "id": "Lead_Jab-2_from_XBot_to_Kaya",
+      "file": "Lead_Jab-2_from_XBot_to_Kaya.mp4"
+    },
+    {
+      "id": "Lead_Jab_from_YBot_to_Mousey",
+      "file": "Lead_Jab_from_YBot_to_Mousey.mp4"
+    },
+    {
+      "id": "Light_Hit_To_Head-2_from_SportyGranny_to_Mousey",
+      "file": "Light_Hit_To_Head-2_from_SportyGranny_to_Mousey.mp4"
+    },
+    {
+      "id": "Light_Hit_To_Head_from_Swat_to_BigVegas",
+      "file": "Light_Hit_To_Head_from_Swat_to_BigVegas.mp4"
+    },
+    {
+      "id": "Samba_Dancing_from_XBot_to_Aj",
+      "file": "Samba_Dancing_from_XBot_to_Aj.mp4"
+    }
+  ]
+}

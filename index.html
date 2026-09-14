@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Motion Retargeting User Study</title>
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+
+<!-- ---------------------------------------------------------------- intro -->
+<section id="screen-intro" class="screen">
+  <div class="wrap narrow">
+    <h1>Motion Retargeting User Study</h1>
+    <p class="lede">
+      You will compare several versions of the same animated motion, transferred
+      from a source character onto a different target character. Your task is to
+      rank them on three criteria.
+    </p>
+
+    <h2>What you are looking at</h2>
+    <p>
+      Each page shows one <strong>reference video</strong> at the top &mdash; the
+      original motion performed by the source character. Below it are
+      <strong id="intro-n-methods">several</strong> versions of that same motion
+      applied to a different target character, each produced by a different
+      method. They are labelled <strong>A</strong>, <strong>B</strong>,
+      <strong>C</strong>&hellip; in a random order that changes on every page, so
+      the letters carry no meaning across pages.
+    </p>
+
+    <h2>What to judge</h2>
+    <dl class="criteria">
+      <dt>Overall quality</dt>
+      <dd>Your holistic judgement: which result looks like the best animation of
+          this motion on this character?</dd>
+      <dt>Self-penetration</dt>
+      <dd>Does the character's body pass through itself &mdash; hands sinking into
+          the torso, arms clipping through the hips, a limb intersecting the head?
+          Rank the result with the <em>least</em> such intersection first.</dd>
+      <dt>Semantic preservation</dt>
+      <dd>Is it still recognisably the <em>same action</em> as the reference, with
+          the same intent and characteristic poses? Ignore body shape differences;
+          the target character is a different size and that is expected.</dd>
+    </dl>
+
+    <h2>How to rank</h2>
+    <p>
+      Give each version a rank from 1 (best) downward.
+      <strong>Ties are allowed and expected</strong> &mdash; if two versions look
+      equally good to you, give them the same rank. You do not need to use every
+      rank number.
+    </p>
+    <p class="muted">
+      There are no right answers and your responses are anonymous. Nothing is
+      recorded until you press submit at the end. Expect roughly
+      <span id="intro-duration">15</span> minutes.
+    </p>
+
+    <label class="consent">
+      <input type="checkbox" id="consent-box">
+      <span>I understand the task and agree to take part.</span>
+    </label>
+
+    <button id="btn-start" class="primary" disabled>Start</button>
+    <p id="resume-note" class="muted hidden"></p>
+  </div>
+</section>
+
+<!-- ----------------------------------------------------------------- task -->
+<section id="screen-task" class="screen hidden">
+  <header class="bar">
+    <div class="wrap bar-inner">
+      <span class="progress-text">Clip <b id="clip-index">1</b> of <b id="clip-total">1</b></span>
+      <div class="progress-track"><div id="progress-fill" class="progress-fill"></div></div>
+      <button id="btn-help" class="ghost small" type="button">Criteria</button>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <div class="reference">
+      <h2>Reference &mdash; source motion</h2>
+      <video id="video-reference" muted loop playsinline preload="auto"></video>
+      <p class="muted small">This is the motion being transferred. It is shown for
+         comparison only and is not ranked.</p>
+    </div>
+
+    <div class="playbar">
+      <button id="btn-replay" class="ghost" type="button">&#9654; Replay all</button>
+      <button id="btn-pause" class="ghost" type="button">&#10073;&#10073; Pause all</button>
+      <span class="muted small">All videos are synchronised and loop automatically.</span>
+    </div>
+
+    <div id="video-grid" class="grid"></div>
+
+    <div id="ranking-blocks"></div>
+
+    <div class="nav">
+      <button id="btn-back" class="ghost" type="button">Back</button>
+      <span id="validation" class="validation"></span>
+      <button id="btn-next" class="primary" type="button">Next clip</button>
+    </div>
+  </div>
+</section>
+
+<!-- --------------------------------------------------------------- submit -->
+<section id="screen-submit" class="screen hidden">
+  <div class="wrap narrow">
+    <h1>Almost done</h1>
+    <p>Thank you. Two optional questions, then you can submit.</p>
+
+    <label class="field">
+      <span>How familiar are you with character animation or motion capture?</span>
+      <select id="q-expertise">
+        <option value="">Prefer not to say</option>
+        <option value="none">Not familiar</option>
+        <option value="some">Some familiarity</option>
+        <option value="professional">I work with it professionally or research it</option>
+      </select>
+    </label>
+
+    <label class="field">
+      <span>Any comments? (optional)</span>
+      <textarea id="q-comments" rows="4" maxlength="2000"
+                placeholder="Anything confusing, or anything you noticed?"></textarea>
+    </label>
+
+    <button id="btn-submit" class="primary">Submit responses</button>
+    <p id="submit-status" class="status"></p>
+  </div>
+</section>
+
+<!-- ----------------------------------------------------------------- done -->
+<section id="screen-done" class="screen hidden">
+  <div class="wrap narrow">
+    <h1>Thank you</h1>
+    <p id="done-message">Your responses have been recorded.</p>
+    <p class="muted">You can close this tab.</p>
+    <button id="btn-download" class="ghost">Download a copy of my responses</button>
+  </div>
+</section>
+
+<!-- ----------------------------------------------------------- help modal -->
+<div id="help-modal" class="modal hidden">
+  <div class="modal-card">
+    <h2>The three criteria</h2>
+    <dl class="criteria">
+      <dt>Overall quality</dt>
+      <dd>Which result is the best animation overall?</dd>
+      <dt>Self-penetration</dt>
+      <dd>Which has the least body-through-body intersection? Least first.</dd>
+      <dt>Semantic preservation</dt>
+      <dd>Which best preserves the same action and intent as the reference?
+          Ignore body shape differences.</dd>
+    </dl>
+    <p class="muted">Ties are allowed: give equally good results the same rank.</p>
+    <button id="btn-help-close" class="primary">Close</button>
+  </div>
+</div>
+
+<script src="assets/config.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>

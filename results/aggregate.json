@@ -1,0 +1,15 @@
+{
+  "n_participants": 0,
+  "n_responses": 0,
+  "n_clips_covered": 0,
+  "criteria": [
+    "overall",
+    "penetration",
+    "semantic"
+  ],
+  "results": {
+    "overall": [],
+    "penetration": [],
+    "semantic": []
+  }
+}

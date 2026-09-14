@@ -1,0 +1,51 @@
+name: Aggregate study responses
+
+# Recompute the results file whenever a new response lands. The Worker commits
+# one JSON per submission into results/responses/; this turns them into
+# results/aggregate.json and results/aggregate.md.
+on:
+  push:
+    paths:
+      - "results/responses/**"
+      - "scripts/aggregate.py"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  # Submissions can arrive in bursts; collapse overlapping runs so two
+  # aggregations never race to push.
+  group: aggregate-responses
+  cancel-in-progress: false
+
+jobs:
+  aggregate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Aggregate
+        run: python3 scripts/aggregate.py
+
+      - name: Commit results
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add results/aggregate.json results/aggregate.md
+          if git diff --staged --quiet; then
+            echo "aggregate unchanged"
+            exit 0
+          fi
+          git commit -m "study: refresh aggregate [skip ci]"
+          # A response may have been committed by the Worker since checkout.
+          for attempt in 1 2 3; do
+            git pull --rebase origin "${GITHUB_REF_NAME}" && git push && exit 0
+            echo "push attempt ${attempt} failed, retrying"
+            sleep 5
+          done
+          exit 1
