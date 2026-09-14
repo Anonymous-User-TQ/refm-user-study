@@ -23,7 +23,7 @@ const CRITERIA = [
   { key: "semantic", label: "Semantic preservation",
     hint: "Which best preserves the same action as the reference?" },
 ];
-const STORAGE_KEY = "refm-user-study-session-v1";
+const STORAGE_KEY = "refm-user-study-session-v2";
 
 const state = {
   manifest: null,
@@ -91,10 +91,27 @@ function buildSession(manifest) {
   });
 }
 
+/* A resumed session carries its own clip list and letter assignment, frozen at
+ * the moment it was created. If the study configuration or the stimuli have
+ * changed since, resuming would silently present the old layout - which is how
+ * a pre-shuffle session could keep showing a shuffled order after shuffling was
+ * turned off. The fingerprint below detects that and forces a clean start. */
+function sessionFingerprint(manifest) {
+  return JSON.stringify({
+    randomizeMethodOrder: CFG.randomizeMethodOrder === true,
+    randomizeClipOrder: CFG.randomizeClipOrder !== false,
+    clipsPerParticipant: Number(CFG.clipsPerParticipant) || 0,
+    reference: manifest.reference,
+    methods: Object.keys(manifest.methods),
+    clips: manifest.clips.map((c) => c.id).slice().sort(),
+  });
+}
+
 function saveSession() {
   if (!CFG.allowResume) return;
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      fingerprint: sessionFingerprint(state.manifest),
       participantId: state.participantId,
       startedAt: state.startedAt,
       clips: state.clips,
@@ -104,13 +121,30 @@ function saveSession() {
   } catch (_) { /* storage disabled; resume simply won't work */ }
 }
 
-function loadSession() {
+/** Returns a resumable session, or null if there is none or it is stale. */
+function loadSession(manifest) {
   if (!CFG.allowResume) return null;
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw === null) return null;
     const s = JSON.parse(raw);
     if (!Array.isArray(s.clips) || s.clips.length === 0) return null;
+    if (s.fingerprint !== sessionFingerprint(manifest)) {
+      clearSession();
+      return null;
+    }
+    // Guard against a stored session whose letter assignment contradicts the
+    // current fixed order, whatever the cause.
+    if (CFG.randomizeMethodOrder !== true) {
+      const expected = Object.keys(manifest.methods).join(",");
+      const stale = s.clips.some((c) =>
+        !Array.isArray(c.letters) ||
+        c.letters.map((x) => x.method).join(",") !== expected);
+      if (stale) {
+        clearSession();
+        return null;
+      }
+    }
     return s;
   } catch (_) { return null; }
 }
@@ -417,7 +451,7 @@ async function init() {
   $("intro-n-methods").textContent = String(nMethods);
   $("intro-duration").textContent = String(CFG.estimatedMinutes || 15);
 
-  const prior = loadSession();
+  const prior = loadSession(manifest);
   if (prior !== null) {
     $("resume-note").textContent =
       `You have an unfinished session (clip ${prior.index + 1} of ${prior.clips.length}). Starting will resume it.`;
