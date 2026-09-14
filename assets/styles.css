@@ -111,10 +111,15 @@ dl.criteria dd { margin: .15em 0 0; color: var(--muted); }
    frames are never cropped. --tile is bounded by height as well as width so a
    short window shrinks the videos instead of pushing controls off-screen. */
 .strip {
-  display: grid; grid-template-columns: repeat(7, minmax(0, 1fr));
+  display: grid;
+  /* --n-cols is set inline by JS (reference + one per ranked method). It feeds
+     --cols here rather than being used directly, so the media queries below can
+     still override the column count - an inline value would outrank them. */
+  --cols: var(--n-cols, 7);
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
   gap: 8px;
-  --tile: clamp(84px, min(13vw, 26vh), 200px);
-  max-width: calc(7 * var(--tile) + 6 * 8px);
+  --tile: clamp(84px, min(calc(90vw / var(--cols)), 26vh), 220px);
+  max-width: calc(var(--cols) * var(--tile) + (var(--cols) - 1) * 8px);
   margin: 0 auto; width: 100%;
 }
 .strip-note { margin: -2px 0 2px; }
@@ -235,20 +240,14 @@ dl.criteria dd { margin: .15em 0 0; color: var(--muted); }
 
 /* Narrower screens: wrap the strip and stack the criteria rather than
    letting anything become unreadably small. */
+/* Narrower screens wrap the strip onto fewer columns and stack the criteria,
+   rather than letting anything shrink to an unusable size. */
 @media (max-width: 1080px) {
-  .strip {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    --tile: min(21vw, 150px);
-    max-width: calc(4 * var(--tile) + 3 * 8px);
-  }
+  .strip { --cols: 4; --tile: min(21vw, 150px); }
   .matrix { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 680px) {
-  .strip {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    --tile: min(29vw, 130px);
-    max-width: calc(3 * var(--tile) + 2 * 8px);
-  }
+  .strip { --cols: 3; --tile: min(29vw, 130px); }
   .matrix { grid-template-columns: 1fr; }
   .bar-inner { gap: 8px; padding: 8px 12px; }
   .stage { padding: 10px 12px 16px; }

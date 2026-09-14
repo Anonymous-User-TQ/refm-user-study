@@ -171,9 +171,11 @@ function renderClip() {
   $("btn-next").textContent =
     state.index === total - 1 ? "Finish" : "Next clip";
 
-  // One row: reference first, then the lettered results.
+  // One row: reference first, then the lettered results. The column count
+  // drives tile sizing, so the strip adapts if methods are added or removed.
   const strip = $("video-strip");
   strip.textContent = "";
+  strip.style.setProperty("--n-cols", String(clip.letters.length + 1));
   strip.append(makeTile("REF", state.manifest.reference, clip.file, true));
   clip.letters.forEach(({ letter, method }) => {
     strip.append(makeTile(letter, method, clip.file, false));

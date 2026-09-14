@@ -19,7 +19,7 @@ window.STUDY_CONFIG = {
   // When false, every participant sees the methods in the same fixed order,
   // taken from the `methods` order in assets/clips.json (edit the RANKED dict
   // in scripts/build_manifest.py to change it). Methods are still shown as
-  // A-F rather than by name, so participants cannot tell which is which, but
+  // letters rather than by name, so participants cannot tell which is which, but
   // a consistent position means any position bias applies to the same method
   // throughout rather than averaging out.
   // Set to true to reshuffle per clip per participant.

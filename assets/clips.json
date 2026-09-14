@@ -1,7 +1,6 @@
 {
   "reference": "original",
   "methods": {
-    "gt": "Ground truth",
     "copy": "Naive copy",
     "humanik": "HumanIK",
     "san": "SAN",

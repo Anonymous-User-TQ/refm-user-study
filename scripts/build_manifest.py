@@ -18,8 +18,9 @@ REFERENCE = "original"
 # Methods that participants rank. Directory name -> label used in the results
 # file. Participants never see these names; the UI relabels them A, B, C...
 # per clip.
+# Letters are assigned in this order, so reordering this dict changes which
+# method a participant sees as A, B, C...
 RANKED = {
-    "gt": "Ground truth",
     "copy": "Naive copy",
     "humanik": "HumanIK",
     "san": "SAN",

@@ -1,14 +1,14 @@
 # Motion Retargeting User Study
 
-A static site that shows participants one source motion plus six retargeted
+A static site that shows participants one source motion plus five retargeted
 versions of it, and asks them to rank the versions on three criteria. Responses
 are committed back into this repository and aggregated automatically.
 
-- **Ranked methods:** ground truth, naive copy, HumanIK, SAN, R2ET, ReFM-HumanIK
+- **Ranked methods:** naive copy, HumanIK, SAN, R2ET, ReFM-HumanIK
 - **Reference (never ranked):** the original source motion
 - **Criteria:** overall quality, self-penetration, semantic preservation
 - **Ties are allowed** — participants may give two results the same rank
-- **Blinded** — methods are shown only as A–F, never by name. The mapping is
+- **Blinded** — methods are shown only as letters, never by name. The mapping is
   fixed (see below) unless `randomizeMethodOrder` is enabled.
 
 Results land in [`results/aggregate.md`](results/aggregate.md).
@@ -153,9 +153,9 @@ inspect the per-response files before drawing conclusions.
 - **Order effects**: the method→letter assignment is currently **fixed**, so
   every participant sees the methods in the same left-to-right order:
 
-  | A | B | C | D | E | F |
-  |---|---|---|---|---|---|
-  | Ground truth | Naive copy | HumanIK | SAN | R2ET | ReFM-HumanIK |
+  | A | B | C | D | E |
+  |---|---|---|---|---|
+  | Naive copy | HumanIK | SAN | R2ET | ReFM-HumanIK |
 
   This is easier to reason about, but it means any position bias lands on the
   same method every time instead of averaging out — a reviewer may ask about
